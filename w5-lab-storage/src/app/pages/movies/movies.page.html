@@ -13,7 +13,10 @@
     <ion-label position="floating">Release Year</ion-label>
     <ion-input [(ngModel)]="releaseYear"></ion-input>
   </ion-item>
-  <ion-button expand="full" (click)="addMovie()">Add Movie</ion-button>
+  <ion-button expand="full" (click)="editingIndex === null ? addMovie() : saveEdit()">
+    {{ editingIndex === null ? 'Add Movie' : 'Save Changes' }}
+  </ion-button>
+  <ion-button expand="full" *ngIf="editingIndex !== null" (click)="cancelEdit()">Cancel</ion-button>
 
   <ion-list>
     <ion-item-sliding *ngFor="let movie of movies; let i = index">
@@ -24,6 +27,7 @@
         </ion-label>
       </ion-item>
       <ion-item-options side="end">
+        <ion-item-option color="primary" (click)="startEditing(i)">Edit</ion-item-option>
         <ion-item-option color="danger" (click)="deleteMovie(i)">Delete</ion-item-option>
       </ion-item-options>
     </ion-item-sliding>

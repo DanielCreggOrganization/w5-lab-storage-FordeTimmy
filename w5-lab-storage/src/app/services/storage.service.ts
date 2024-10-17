@@ -1,4 +1,3 @@
-// [w5-lab-storage/src/app/services/storage.service.ts](w5-lab-storage/src/app/services/storage.service.ts)
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 
@@ -17,12 +16,16 @@ export class StorageService {
     this.storage = storage;
   }
 
-  async set(key: string, value: any): Promise<void> {
+  private async ensureStorageInitialized() {
     if (!this.storage) {
-      throw new Error('Storage is not initialized');
+      await this.init();
     }
+  }
+
+  async set(key: string, value: any): Promise<void> {
+    await this.ensureStorageInitialized();
     try {
-      await this.storage.set(key, value);
+      await this.storage!.set(key, value);
     } catch (error) {
       console.error('Error setting item', error);
       throw error;
@@ -30,11 +33,9 @@ export class StorageService {
   }
 
   async get(key: string): Promise<any> {
-    if (!this.storage) {
-      throw new Error('Storage is not initialized');
-    }
+    await this.ensureStorageInitialized();
     try {
-      return await this.storage.get(key);
+      return await this.storage!.get(key);
     } catch (error) {
       console.error('Error getting item', error);
       throw error;
@@ -42,11 +43,9 @@ export class StorageService {
   }
 
   async remove(key: string): Promise<void> {
-    if (!this.storage) {
-      throw new Error('Storage is not initialized');
-    }
+    await this.ensureStorageInitialized();
     try {
-      await this.storage.remove(key);
+      await this.storage!.remove(key);
     } catch (error) {
       console.error('Error removing item', error);
       throw error;
@@ -54,11 +53,9 @@ export class StorageService {
   }
 
   async clear(): Promise<void> {
-    if (!this.storage) {
-      throw new Error('Storage is not initialized');
-    }
+    await this.ensureStorageInitialized();
     try {
-      await this.storage.clear();
+      await this.storage!.clear();
     } catch (error) {
       console.error('Error clearing storage', error);
       throw error;
@@ -66,11 +63,9 @@ export class StorageService {
   }
 
   async keys(): Promise<string[]> {
-    if (!this.storage) {
-      throw new Error('Storage is not initialized');
-    }
+    await this.ensureStorageInitialized();
     try {
-      return await this.storage.keys();
+      return await this.storage!.keys();
     } catch (error) {
       console.error('Error getting keys', error);
       throw error;
@@ -78,11 +73,9 @@ export class StorageService {
   }
 
   async length(): Promise<number> {
-    if (!this.storage) {
-      throw new Error('Storage is not initialized');
-    }
+    await this.ensureStorageInitialized();
     try {
-      return await this.storage.length();
+      return await this.storage!.length();
     } catch (error) {
       console.error('Error getting storage length', error);
       throw error;
@@ -90,11 +83,9 @@ export class StorageService {
   }
 
   async forEach(callback: (value: any, key: string, iterationNumber: Number) => void): Promise<void> {
-    if (!this.storage) {
-      throw new Error('Storage is not initialized');
-    }
+    await this.ensureStorageInitialized();
     try {
-      await this.storage.forEach(callback);
+      await this.storage!.forEach(callback);
     } catch (error) {
       console.error('Error iterating items', error);
       throw error;
@@ -102,11 +93,9 @@ export class StorageService {
   }
 
   async exists(key: string): Promise<boolean> {
-    if (!this.storage) {
-      throw new Error('Storage is not initialized');
-    }
+    await this.ensureStorageInitialized();
     try {
-      const value = await this.storage.get(key);
+      const value = await this.storage!.get(key);
       return value !== null;
     } catch (error) {
       console.error('Error checking existence', error);

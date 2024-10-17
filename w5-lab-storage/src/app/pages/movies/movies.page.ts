@@ -16,6 +16,7 @@ export class MoviesPage implements OnInit {
   releaseYear: string = '';
   movies: { name: string; year: string }[] = [];
   errorMessage: string = '';
+  editingIndex: number | null = null;
 
   constructor(private storageService: StorageService) {}
 
@@ -63,5 +64,36 @@ export class MoviesPage implements OnInit {
       console.error('Error deleting movie:', error);
       this.errorMessage = 'Error deleting movie. Please try again.';
     }
+  }
+
+  startEditing(index: number) {
+    this.editingIndex = index;
+    this.movieName = this.movies[index].name;
+    this.releaseYear = this.movies[index].year;
+  }
+
+  async saveEdit() {
+    if (this.editingIndex !== null && this.movieName && this.releaseYear) {
+      this.movies[this.editingIndex] = { name: this.movieName, year: this.releaseYear };
+      try {
+        await this.storageService.set('movies', this.movies);
+        this.editingIndex = null;
+        this.movieName = '';
+        this.releaseYear = '';
+        this.errorMessage = '';
+      } catch (error) {
+        console.error('Error editing movie:', error);
+        this.errorMessage = 'Error editing movie. Please try again.';
+      }
+    } else {
+      this.errorMessage = 'Movie name and release year are required.';
+    }
+  }
+
+  cancelEdit() {
+    this.editingIndex = null;
+    this.movieName = '';
+    this.releaseYear = '';
+    this.errorMessage = '';
   }
 }
