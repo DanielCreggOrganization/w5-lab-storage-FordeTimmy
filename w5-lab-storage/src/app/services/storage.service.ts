@@ -1,91 +1,115 @@
-import { Injectable, Inject } from '@angular/core';
+// [w5-lab-storage/src/app/services/storage.service.ts](w5-lab-storage/src/app/services/storage.service.ts)
+import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class StorageService {
-  private storage = Inject(Storage);
-  
-  constructor() {
+  private storage: Storage | null = null;
+
+  constructor(private storageProvider: Storage) {
     this.init();
   }
 
   async init() {
-    await this.storage.create();
+    const storage = await this.storageProvider.create();
+    this.storage = storage;
   }
 
-  // Storage methods with error handling
-  public async set(key: string, value: any) {
+  async set(key: string, value: any): Promise<void> {
+    if (!this.storage) {
+      throw new Error('Storage is not initialized');
+    }
     try {
       await this.storage.set(key, value);
     } catch (error) {
-      console.error(`Error setting key "${key}":`, error);
+      console.error('Error setting item', error);
       throw error;
     }
   }
 
-  public async get(key: string) {
+  async get(key: string): Promise<any> {
+    if (!this.storage) {
+      throw new Error('Storage is not initialized');
+    }
     try {
       return await this.storage.get(key);
     } catch (error) {
-      console.error(`Error getting key "${key}":`, error);
+      console.error('Error getting item', error);
       throw error;
     }
   }
 
-  public async remove(key: string) {
+  async remove(key: string): Promise<void> {
+    if (!this.storage) {
+      throw new Error('Storage is not initialized');
+    }
     try {
       await this.storage.remove(key);
     } catch (error) {
-      console.error(`Error removing key "${key}":`, error);
+      console.error('Error removing item', error);
       throw error;
     }
   }
 
-  public async clear() {
+  async clear(): Promise<void> {
+    if (!this.storage) {
+      throw new Error('Storage is not initialized');
+    }
     try {
       await this.storage.clear();
     } catch (error) {
-      console.error('Error clearing storage:', error);
+      console.error('Error clearing storage', error);
       throw error;
     }
   }
 
-  public async keys() {
+  async keys(): Promise<string[]> {
+    if (!this.storage) {
+      throw new Error('Storage is not initialized');
+    }
     try {
       return await this.storage.keys();
     } catch (error) {
-      console.error('Error getting keys:', error);
+      console.error('Error getting keys', error);
       throw error;
     }
   }
 
-  public async length() {
+  async length(): Promise<number> {
+    if (!this.storage) {
+      throw new Error('Storage is not initialized');
+    }
     try {
       return await this.storage.length();
     } catch (error) {
-      console.error('Error getting storage length:', error);
+      console.error('Error getting storage length', error);
       throw error;
     }
   }
 
-  public async forEach(iteratorCallback: (value: any, key: string, iterationNumber: Number) => any) {
+  async forEach(callback: (value: any, key: string, iterationNumber: Number) => void): Promise<void> {
+    if (!this.storage) {
+      throw new Error('Storage is not initialized');
+    }
     try {
-      await this.storage.forEach(iteratorCallback);
+      await this.storage.forEach(callback);
     } catch (error) {
-      console.error('Error iterating over storage items:', error);
+      console.error('Error iterating items', error);
       throw error;
     }
   }
 
-  // Utility method to check if a key exists
-  public async exists(key: string): Promise<boolean> {
+  async exists(key: string): Promise<boolean> {
+    if (!this.storage) {
+      throw new Error('Storage is not initialized');
+    }
     try {
-      const value = await this.get(key);
+      const value = await this.storage.get(key);
       return value !== null;
     } catch (error) {
-      console.error(`Error checking existence of key "${key}":`, error);
+      console.error('Error checking existence', error);
       throw error;
     }
   }
